@@ -1,10 +1,15 @@
 import { Bot, MessageCircle, Send, X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
-import { chatbotResponses, genericResponse, quickPrompts } from "../data/chatbotResponses";
 
 type Message = {
   from: "bot" | "user";
   text: string;
+  loading?: boolean;
+};
+
+type ApiMessage = {
+  role: "assistant" | "user";
+  content: string;
 };
 
 const floatingMessages = [
@@ -16,14 +21,41 @@ const floatingMessages = [
 
 const botAnimations = ["bot-bounce", "bot-glow", "bot-wiggle", "bot-float", "bot-pulse"];
 
+const chatEndpoint = "https://andesnova-chat-api.vercel.app/api/chat";
+
+const quickPrompts = [
+  "Quiero ordenar mis documentos",
+  "Necesito controlar contratos",
+  "Deseo mejorar procesos",
+  "Necesito apoyo en SST",
+  "Quiero un chatbot documental",
+  "Necesito reportes o dashboards",
+];
+
+const contactActions = ["Solicitar evaluación", "Contactar especialista", "Enviar caso"];
+
 const initialMessage =
   "Hola, soy AndesNova IA. Puedo orientarte sobre gestión documental, contratos, procesos, SST, logística, reportes o soluciones con IA. ¿Qué necesitas resolver?";
+
+const loadingMessage = "AndesNova IA está escribiendo...";
+
+const errorMessage = "En este momento no puedo procesar la consulta. Intente nuevamente o solicite una evaluación inicial.";
+
+const toApiHistory = (messages: Message[]): ApiMessage[] =>
+  messages
+    .filter((message) => !message.loading)
+    .map((message) => ({
+      role: message.from === "bot" ? ("assistant" as const) : ("user" as const),
+      content: message.text,
+    }))
+    .slice(-6);
 
 export function FloatingChatbot() {
   const [open, setOpen] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [botAnimation, setBotAnimation] = useState(botAnimations[0]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([{ from: "bot", text: initialMessage }]);
 
   useEffect(() => {
@@ -53,21 +85,69 @@ export function FloatingChatbot() {
     return () => window.removeEventListener("hashchange", openFromHash);
   }, []);
 
+  const scrollToContact = () => {
+    document.getElementById("contacto")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const sendMessage = async (userMessage: string) => {
+    if (loading) return;
+
+    setLoading(true);
+
+    const userEntry: Message = { from: "user", text: userMessage };
+    const waitingEntry: Message = { from: "bot", text: loadingMessage, loading: true };
+    let history: ApiMessage[] = [];
+
+    setMessages((current) => {
+      history = toApiHistory(current);
+      return [...current, userEntry, waitingEntry];
+    });
+
+    try {
+      const response = await fetch(chatEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          history,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Chat request failed with ${response.status}`);
+      }
+
+      const data = (await response.json()) as { answer?: unknown };
+      const answer = typeof data.answer === "string" && data.answer.trim() ? data.answer : errorMessage;
+
+      setMessages((current) =>
+        current.map((message) => (message.loading ? { from: "bot", text: answer } : message)),
+      );
+    } catch {
+      setMessages((current) =>
+        current.map((message) => (message.loading ? { from: "bot", text: errorMessage } : message)),
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const ask = (prompt: string) => {
-    setMessages((current) => [
-      ...current,
-      { from: "user", text: prompt },
-      { from: "bot", text: chatbotResponses[prompt] ?? genericResponse },
-    ]);
+    void sendMessage(prompt);
   };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const text = input.trim();
-    if (!text) return;
+    if (!text || loading) return;
 
     setInput("");
-    setMessages((current) => [...current, { from: "user", text }, { from: "bot", text: genericResponse }]);
+    void sendMessage(text);
   };
 
   return (
@@ -113,9 +193,23 @@ export function FloatingChatbot() {
                   key={prompt}
                   type="button"
                   onClick={() => ask(prompt)}
-                  className="rounded-full border border-teal/40 bg-white px-3 py-2 text-xs font-bold text-tealDark transition hover:bg-teal hover:text-white"
+                  disabled={loading}
+                  className="rounded-full border border-teal/40 bg-white px-3 py-2 text-xs font-bold text-tealDark transition hover:bg-teal hover:text-white disabled:cursor-not-allowed disabled:opacity-55"
                 >
                   {prompt}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid gap-2 border-t border-slate-200 pt-3 sm:grid-cols-3">
+              {contactActions.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  onClick={scrollToContact}
+                  className="rounded-full bg-navy px-3 py-2 text-xs font-extrabold text-white transition hover:bg-navyDark"
+                >
+                  {action}
                 </button>
               ))}
             </div>
@@ -131,8 +225,9 @@ export function FloatingChatbot() {
             />
             <button
               type="submit"
-              className="grid h-12 w-12 place-items-center rounded-full bg-teal text-white transition hover:bg-tealDark"
-              aria-label="Enviar consulta"
+              disabled={loading}
+              className="grid h-12 w-12 place-items-center rounded-full bg-teal text-white transition hover:bg-tealDark disabled:cursor-not-allowed disabled:opacity-55"
+              aria-label={loading ? "Esperando respuesta" : "Enviar consulta"}
             >
               <Send className="h-5 w-5" />
             </button>
