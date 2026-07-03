@@ -1,5 +1,5 @@
 import { Bot, MessageCircle, Send, X } from "lucide-react";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Message = {
   from: "bot" | "user";
@@ -10,6 +10,11 @@ type Message = {
 type ApiMessage = {
   role: "assistant" | "user";
   content: string;
+};
+
+type SuggestionChip = {
+  label: string;
+  message: string;
 };
 
 const floatingMessages = [
@@ -23,23 +28,52 @@ const botAnimations = ["bot-bounce", "bot-glow", "bot-wiggle", "bot-float", "bot
 
 const chatEndpoint = "https://andesnova-chat-api.vercel.app/api/chat";
 
-const quickPrompts = [
-  "Quiero ordenar mis documentos",
-  "Necesito controlar contratos",
-  "Deseo mejorar procesos",
-  "Necesito apoyo en SST",
-  "Quiero un chatbot documental",
-  "Necesito reportes o dashboards",
+const primarySuggestions: SuggestionChip[] = [
+  {
+    label: "Ordenar documentos",
+    message: "Quiero ordenar los documentos de mi empresa. ¿Por dónde debería empezar?",
+  },
+  {
+    label: "Revisar contratos",
+    message: "Tengo contratos desordenados y quiero controlar vencimientos y obligaciones. ¿Qué me recomienda?",
+  },
+  {
+    label: "Mejorar procesos",
+    message: "Mi empresa tiene demoras y procesos poco claros. ¿Qué pasos iniciales debería tomar?",
+  },
 ];
 
-const contactActions = ["Solicitar evaluación", "Contactar especialista", "Enviar caso"];
+const moreSuggestions: SuggestionChip[] = [
+  {
+    label: "SST",
+    message: "Necesito apoyo en SST para ordenar documentación, controles e IPERC. ¿Cómo debería empezar?",
+  },
+  {
+    label: "Logística",
+    message: "Quiero ordenar proveedores, compras y contrataciones. ¿Qué recomienda AndesNova?",
+  },
+  {
+    label: "Dashboards",
+    message: "Necesito reportes o dashboards para controlar mejor la gestión. ¿Qué información debería preparar?",
+  },
+  {
+    label: "Chatbot documental",
+    message: "Quiero un chatbot documental para consultar archivos internos. ¿Qué pasos recomienda?",
+  },
+  {
+    label: "Capacitación",
+    message: "Necesito capacitación para mi equipo en procesos, documentación o SST. ¿Qué enfoque recomienda?",
+  },
+];
+
+const contactActions = ["Solicitar evaluación", "Contactar especialista"];
 
 const initialMessage =
-  "Hola, soy AndesNova IA. Puedo orientarte sobre gestión documental, contratos, procesos, SST, logística, reportes o soluciones con IA. ¿Qué necesitas resolver?";
+  "Hola, soy AndesNova IA+. Puedo orientarte sobre documentos, contratos, procesos, SST, logística, reportes o soluciones con IA. Cuéntame brevemente qué necesitas resolver.";
 
-const loadingMessage = "AndesNova IA está escribiendo...";
+const loadingMessage = "IA escribiendo";
 
-const errorMessage = "En este momento no puedo procesar la consulta. Intente nuevamente o solicite una evaluación inicial.";
+const errorMessage = "Ahora mismo no puedo procesar la consulta. Puede intentar nuevamente o solicitar una evaluación inicial.";
 
 const toApiHistory = (messages: Message[]): ApiMessage[] =>
   messages
@@ -50,13 +84,28 @@ const toApiHistory = (messages: Message[]): ApiMessage[] =>
     }))
     .slice(-6);
 
+function TypingIndicator() {
+  return (
+    <div className="mr-12 inline-flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
+      <span>{loadingMessage}</span>
+      <span className="flex gap-1" aria-hidden="true">
+        <span className="chat-dot" />
+        <span className="chat-dot chat-dot-delay-1" />
+        <span className="chat-dot chat-dot-delay-2" />
+      </span>
+    </div>
+  );
+}
+
 export function FloatingChatbot() {
   const [open, setOpen] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [botAnimation, setBotAnimation] = useState(botAnimations[0]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showMoreTopics, setShowMoreTopics] = useState(false);
   const [messages, setMessages] = useState<Message[]>([{ from: "bot", text: initialMessage }]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const messageTimer = window.setInterval(() => {
@@ -84,6 +133,12 @@ export function FloatingChatbot() {
     window.addEventListener("hashchange", openFromHash);
     return () => window.removeEventListener("hashchange", openFromHash);
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages, open, showMoreTopics]);
 
   const scrollToContact = () => {
     document.getElementById("contacto")?.scrollIntoView({
@@ -137,8 +192,8 @@ export function FloatingChatbot() {
     }
   };
 
-  const ask = (prompt: string) => {
-    void sendMessage(prompt);
+  const chooseSuggestion = (suggestion: SuggestionChip) => {
+    void sendMessage(suggestion.message);
   };
 
   const submit = (event: FormEvent) => {
@@ -150,11 +205,14 @@ export function FloatingChatbot() {
     void sendMessage(text);
   };
 
+  const hasUserMessage = messages.some((message) => message.from === "user");
+  const visibleSuggestions = showMoreTopics ? [...primarySuggestions, ...moreSuggestions] : primarySuggestions;
+
   return (
     <div id="ia" className="fixed bottom-5 right-4 z-[90] sm:bottom-7 sm:right-7">
       {open && (
-        <section className="mb-4 w-[min(calc(100vw-2rem),390px)] overflow-hidden rounded-2xl border border-white/15 bg-[#0b233d] shadow-premium">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <section className="mb-4 flex max-h-[80vh] w-[min(calc(100vw-2rem),410px)] flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#0b233d] shadow-premium">
+          <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-teal">
                 <Bot className="h-6 w-6" />
@@ -175,67 +233,86 @@ export function FloatingChatbot() {
             </button>
           </div>
 
-          <div className="max-h-[430px] space-y-3 overflow-auto bg-softWhite p-3">
-            {messages.map((message, index) => (
-              <div
-                key={`${message.from}-${index}`}
-                className={`rounded-xl p-3 text-sm leading-6 ${
-                  message.from === "bot" ? "mr-8 bg-white text-navy shadow-sm" : "ml-8 bg-teal text-white"
-                }`}
-              >
-                {message.text}
-              </div>
-            ))}
-
-            <div className="grid gap-2">
-              {quickPrompts.map((prompt) => (
-                <button
-                  key={prompt}
-                  type="button"
-                  onClick={() => ask(prompt)}
-                  disabled={loading}
-                  className="rounded-full border border-teal/40 bg-white px-3 py-2 text-xs font-bold text-tealDark transition hover:bg-teal hover:text-white disabled:cursor-not-allowed disabled:opacity-55"
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-softWhite p-3">
+            {messages.map((message, index) =>
+              message.loading ? (
+                <TypingIndicator key={`${message.from}-${index}`} />
+              ) : (
+                <div
+                  key={`${message.from}-${index}`}
+                  className={`whitespace-pre-line rounded-2xl px-3.5 py-3 text-sm leading-6 shadow-sm ${
+                    message.from === "bot"
+                      ? "mr-10 bg-white text-navy"
+                      : "ml-10 bg-teal text-white"
+                  }`}
                 >
-                  {prompt}
-                </button>
-              ))}
-            </div>
+                  {message.text}
+                </div>
+              ),
+            )}
 
-            <div className="grid gap-2 border-t border-slate-200 pt-3 sm:grid-cols-3">
+            {!hasUserMessage && (
+              <div className="space-y-2">
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap">
+                  {visibleSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.label}
+                      type="button"
+                      onClick={() => chooseSuggestion(suggestion)}
+                      disabled={loading}
+                      className="shrink-0 rounded-full border border-teal/35 bg-white px-3 py-1.5 text-xs font-bold text-tealDark transition hover:bg-teal hover:text-white disabled:cursor-not-allowed disabled:opacity-55"
+                    >
+                      {suggestion.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowMoreTopics((value) => !value)}
+                  className="text-xs font-bold text-tealDark transition hover:text-teal"
+                >
+                  {showMoreTopics ? "Ver menos temas" : "Ver más temas"}
+                </button>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="shrink-0 border-t border-white/10 bg-[#0b233d] px-3 pt-3">
+            <div className="mb-2 flex flex-wrap gap-2">
               {contactActions.map((action) => (
                 <button
                   key={action}
                   type="button"
                   onClick={scrollToContact}
-                  className="rounded-full bg-navy px-3 py-2 text-xs font-extrabold text-white transition hover:bg-navyDark"
+                  className="rounded-full border border-white/15 px-3 py-1.5 text-xs font-bold text-white/75 transition hover:border-gold/60 hover:text-gold"
                 >
                   {action}
                 </button>
               ))}
             </div>
+
+            <form onSubmit={submit} className="flex gap-2 pb-3">
+              <input
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                className="min-w-0 flex-1 rounded-full border border-white/10 bg-white px-4 py-3 text-sm text-navy outline-none focus:ring-2 focus:ring-teal"
+                placeholder="Describe tu caso o consulta..."
+                aria-label="Describe tu caso o consulta"
+              />
+              <button
+                type="submit"
+                disabled={loading || !input.trim()}
+                className="grid h-12 w-12 place-items-center rounded-full bg-teal text-white transition hover:bg-tealDark disabled:cursor-not-allowed disabled:opacity-55"
+                aria-label={loading ? "Esperando respuesta" : "Enviar consulta"}
+              >
+                <Send className="h-5 w-5" />
+              </button>
+            </form>
+
+            <p className="pb-3 text-xs text-white/45">Orientado con documentación interna de AndesNova.</p>
           </div>
-
-          <form onSubmit={submit} className="flex gap-2 border-t border-white/10 bg-[#0b233d] p-3">
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              className="min-w-0 flex-1 rounded-full border border-white/10 bg-white px-4 py-3 text-sm text-navy outline-none focus:ring-2 focus:ring-teal"
-              placeholder="Escriba su consulta..."
-              aria-label="Escriba su consulta"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="grid h-12 w-12 place-items-center rounded-full bg-teal text-white transition hover:bg-tealDark disabled:cursor-not-allowed disabled:opacity-55"
-              aria-label={loading ? "Esperando respuesta" : "Enviar consulta"}
-            >
-              <Send className="h-5 w-5" />
-            </button>
-          </form>
-
-          <p className="bg-[#0b233d] px-4 pb-3 text-xs text-white/55">
-            Consulta inicial orientativa. Servicio sujeto a evaluación.
-          </p>
         </section>
       )}
 
