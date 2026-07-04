@@ -4,7 +4,7 @@ Portal corporativo demo para AndesNova Consultores S.A.C., construido con React,
 
 ## Demo en GitHub Pages
 
-Sitio publicado: [https://oprbguitar.github.io/AndesNova/](https://oprbguitar.github.io/Andes_Nova/)
+Sitio publicado: [https://oprbguitar.github.io/Andes_Nova/](https://oprbguitar.github.io/Andes_Nova/)
 
 La publicación se realiza con GitHub Actions mediante `.github/workflows/pages.yml`. Cada push a `main` compila el proyecto con Vite y publica el contenido de `dist` en la rama `gh-pages`.
 
