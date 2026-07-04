@@ -504,6 +504,10 @@ input:focus-visible {
   z-index: 3;
 }
 
+.home-screen > .assistant-panel {
+  grid-row: 1 / -1;
+}
+
 .mascot-wrap {
   height: 118px;
   display: grid;
