@@ -1,7 +1,6 @@
 import { ArrowRight, Map } from "lucide-react";
 import { motion } from "framer-motion";
-import type { EvaluationArea, KpiCardData, companyData } from "../data/companyData";
-import { AssistantPanel } from "./AssistantPanel";
+import type { EvaluationArea, KpiCardData } from "../data/companyData";
 import { BuildingIllustration } from "./BuildingIllustration";
 import { EvaluationNode } from "./EvaluationNode";
 import { KpiCard } from "./KpiCard";
@@ -9,7 +8,6 @@ import { KpiCard } from "./KpiCard";
 type HomeViewProps = {
   areas: EvaluationArea[];
   kpis: KpiCardData[];
-  assistant: typeof companyData.assistant;
   selectedArea?: EvaluationArea;
   onSelectArea: (id: string) => void;
   onRoute: () => void;
@@ -17,7 +15,7 @@ type HomeViewProps = {
 
 const positions = ["node-base", "node-docs", "node-operation", "node-risks", "node-clients"];
 
-export function HomeView({ areas, kpis, assistant, selectedArea, onSelectArea, onRoute }: HomeViewProps) {
+export function HomeView({ areas, kpis, selectedArea, onSelectArea, onRoute }: HomeViewProps) {
   return (
     <motion.section
       className="screen home-screen"
@@ -58,18 +56,6 @@ export function HomeView({ areas, kpis, assistant, selectedArea, onSelectArea, o
           />
         ))}
       </div>
-
-      <AssistantPanel
-        mode="home"
-        title={assistant.homeTitle}
-        subtitle={assistant.homeSubtitle}
-        status={assistant.status}
-        suggestions={assistant.suggestions}
-        prompts={assistant.prompts}
-        selectedArea={selectedArea}
-        onSuggestion={onSelectArea}
-        onPrimary={() => onSelectArea("base")}
-      />
 
       <div className="kpi-row">
         {kpis.map((item) => (

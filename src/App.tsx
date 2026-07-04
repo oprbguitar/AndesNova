@@ -48,7 +48,6 @@ export default function App() {
               key="home"
               areas={data.areas}
               kpis={data.kpis}
-              assistant={data.assistant}
               selectedArea={selectedArea}
               onSelectArea={setSelectedAreaId}
               onRoute={() => navigate("Ruta")}

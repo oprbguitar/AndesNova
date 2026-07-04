@@ -3,7 +3,6 @@ import { ArrowRight } from "lucide-react";
 import type { CSSProperties } from "react";
 import type { EvaluationArea, companyData } from "../data/companyData";
 import { ChatDrawer } from "./ChatDrawer";
-import { AssistantPanel } from "./AssistantPanel";
 import { BuildingIllustration } from "./BuildingIllustration";
 import { EvaluationNode } from "./EvaluationNode";
 import { RoutePath } from "./RoutePath";
@@ -23,9 +22,6 @@ export function RouteView({ areas, routeSteps, assistant, selectedArea, onSelect
     .map((id) => areas.find((area) => area.id === id))
     .filter(Boolean) as EvaluationArea[];
   const activeArea = selectedArea ?? ordered[0];
-  const routePriorities = ["risks", "operation", "documentation"]
-    .map((id) => areas.find((area) => area.id === id))
-    .filter(Boolean) as EvaluationArea[];
 
   return (
     <motion.section
@@ -141,19 +137,6 @@ export function RouteView({ areas, routeSteps, assistant, selectedArea, onSelect
           </section>
         ) : null}
       </div>
-      <AssistantPanel
-        className="route-desktop-assistant"
-        mode="route"
-        title={assistant.routeTitle}
-        subtitle={assistant.routeSubtitle}
-        status={assistant.status}
-        suggestions={assistant.suggestions}
-        prompts={assistant.prompts}
-        selectedArea={selectedArea}
-        routePriorities={routePriorities}
-        onSuggestion={onSelectArea}
-        onPrimary={() => onSelectArea("risks")}
-      />
     </motion.section>
   );
 }
