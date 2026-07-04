@@ -1012,10 +1012,57 @@ input:focus-visible {
 
   .assistant-panel {
     height: min(100%, 710px);
+    padding: 16px 22px;
   }
 
   .mascot-wrap {
-    height: 92px;
+    height: 68px;
+  }
+
+  .mascot {
+    transform: scale(0.74);
+  }
+
+  .assistant-panel h2 {
+    font-size: 22px;
+  }
+
+  .assistant-panel > p {
+    margin: 6px auto 12px;
+    font-size: 15px;
+  }
+
+  .assistant-divider {
+    margin: 2px 0 12px;
+  }
+
+  .assistant-panel h3 {
+    margin-bottom: 9px;
+    font-size: 16px;
+  }
+
+  .suggestion-list {
+    gap: 8px;
+  }
+
+  .suggestion-list button {
+    min-height: 54px;
+    padding: 8px 12px;
+  }
+
+  .suggestion-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .assistant-cta {
+    min-height: 48px;
+    margin-top: 12px;
+  }
+
+  .assistant-status {
+    min-height: 42px;
+    font-size: 13px;
   }
 }
 
