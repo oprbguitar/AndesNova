@@ -1440,6 +1440,9 @@ input:focus-visible {
   .route-mobile-assistant,
   .route-progress-card,
   .route-mobile-detail {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     border: 1px solid var(--line);
     border-radius: 22px;
     background: rgba(255, 255, 255, 0.86);
@@ -1454,6 +1457,7 @@ input:focus-visible {
     align-items: center;
     gap: 12px;
     padding: 14px;
+    overflow: hidden;
   }
 
   .route-mobile-mascot {
@@ -1490,6 +1494,7 @@ input:focus-visible {
     color: #607094;
     font-size: 13px;
     line-height: 1.42;
+    overflow-wrap: anywhere;
   }
 
   .route-mobile-assistant .chat-drawer {
@@ -1497,12 +1502,15 @@ input:focus-visible {
     display: block;
     grid-column: 1 / -1;
     width: auto;
+    min-width: 0;
+    max-width: 100%;
     margin: 0;
     z-index: 20;
   }
 
   .route-mobile-assistant .chat-toggle {
     width: 100%;
+    max-width: 100%;
     min-width: 86px;
     height: 42px;
     padding: 0 12px;
