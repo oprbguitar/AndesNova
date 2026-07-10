@@ -465,8 +465,7 @@ input:focus-visible {
 }
 
 .evaluation-node:hover .node-popover,
-.evaluation-node:focus-visible .node-popover,
-.evaluation-node.selected .node-popover {
+.evaluation-node:focus-visible .node-popover {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
