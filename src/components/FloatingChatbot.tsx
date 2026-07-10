@@ -79,6 +79,50 @@ const loadingMessage = "IA escribiendo";
 
 const errorMessage = "Ahora mismo no puedo procesar la consulta. Puede intentar nuevamente o solicitar una evaluación inicial.";
 
+const rateLimitMessage =
+  "Has enviado varias consultas seguidas. Espera un momento e inténtalo de nuevo; mientras tanto puedo orientarte con los temas sugeridos.";
+
+const chatStorageKey = "andesnova-chat-messages";
+const maxStoredMessages = 30;
+
+function loadStoredMessages(): Message[] {
+  try {
+    const raw = sessionStorage.getItem(chatStorageKey);
+    if (raw) {
+      const parsed = JSON.parse(raw) as unknown;
+      if (
+        Array.isArray(parsed) &&
+        parsed.length > 0 &&
+        parsed.every(
+          (item) =>
+            item &&
+            typeof item === "object" &&
+            ((item as Message).from === "bot" || (item as Message).from === "user") &&
+            typeof (item as Message).text === "string",
+        )
+      ) {
+        return (parsed as Message[]).map(({ from, text }) => ({ from, text }));
+      }
+    }
+  } catch {
+    // sessionStorage unavailable or corrupted: start fresh
+  }
+
+  return [{ from: "bot", text: initialMessage }];
+}
+
+function storeMessages(messages: Message[]) {
+  try {
+    const persistable = messages
+      .filter((message) => !message.loading)
+      .slice(-maxStoredMessages)
+      .map(({ from, text }) => ({ from, text }));
+    sessionStorage.setItem(chatStorageKey, JSON.stringify(persistable));
+  } catch {
+    // storage full or unavailable: keep the chat working without persistence
+  }
+}
+
 const toApiHistory = (messages: Message[]): ApiMessage[] =>
   messages
     .filter((message) => !message.loading)
@@ -111,7 +155,7 @@ export function FloatingChatbot({ onRequestContact }: FloatingChatbotProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showMoreTopics, setShowMoreTopics] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([{ from: "bot", text: initialMessage }]);
+  const [messages, setMessages] = useState<Message[]>(loadStoredMessages);
   const [orbEffect, setOrbEffect] = useState<"jump" | "glow" | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -174,6 +218,10 @@ export function FloatingChatbot({ onRequestContact }: FloatingChatbotProps) {
     }
   }, [messages, open, showMoreTopics]);
 
+  useEffect(() => {
+    storeMessages(messages);
+  }, [messages]);
+
 
   const sendMessage = async (userMessage: string) => {
     if (loading) return;
@@ -200,6 +248,13 @@ export function FloatingChatbot({ onRequestContact }: FloatingChatbotProps) {
           history,
         }),
       });
+
+      if (response.status === 429) {
+        setMessages((current) =>
+          current.map((message) => (message.loading ? { from: "bot", text: rateLimitMessage } : message)),
+        );
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(`Chat request failed with ${response.status}`);
