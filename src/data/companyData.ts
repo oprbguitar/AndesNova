@@ -34,7 +34,11 @@ export type KpiCardData = {
 
 export const companyData = {
   companyName: "AndesNova",
-  navigation: ["Inicio", "Ruta"],
+  navigation: ["Inicio"],
+  contact: {
+    name: "Pierre R.",
+    email: "peru.labs.pe@gmail.com",
+  },
   assistant: {
     homeTitle: "Hola, soy Andes 👋",
     homeSubtitle: "Estoy aquí para ayudarte.",

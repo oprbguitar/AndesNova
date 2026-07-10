@@ -1,44 +1,29 @@
-import { Plus, UserRound } from "lucide-react";
+import { Mail } from "lucide-react";
 
 type HeaderProps = {
-  activeView: "Inicio" | "Ruta";
-  onNavigate: (view: "Inicio" | "Ruta") => void;
   companyName: string;
-  navigation: string[];
+  contact: { name: string; email: string };
 };
 
-export function Header({ activeView, onNavigate, companyName, navigation }: HeaderProps) {
+export function Header({ companyName, contact }: HeaderProps) {
   return (
     <header className="app-header">
-      <button className="brand" type="button" onClick={() => onNavigate("Inicio")} aria-label="Ir a inicio">
+      <a className="brand" href="#inicio" aria-label="Ir a inicio">
         <span className="brand-mark" aria-hidden="true">
           <span />
         </span>
         <span>{companyName}</span>
-      </button>
+      </a>
 
-      <nav className="main-nav" aria-label="Principal">
-        {navigation.map((item) => (
-          <button
-            className={activeView === item ? "active" : ""}
-            key={item}
-            type="button"
-            onClick={() => onNavigate(item as "Inicio" | "Ruta")}
-          >
-            {item}
-          </button>
-        ))}
-      </nav>
-
-      <div className="header-actions">
-        <button className="new-evaluation" type="button">
-          <Plus size={19} />
-          Nueva evaluación
-        </button>
-        <button className="avatar" type="button" aria-label="Perfil">
-          <UserRound size={22} />
-        </button>
-      </div>
+      <a className="header-contact" href={`mailto:${contact.email}`}>
+        <span className="header-contact-icon" aria-hidden="true">
+          <Mail size={18} />
+        </span>
+        <span className="header-contact-copy">
+          <strong>Consultas a {contact.name}</strong>
+          <small>{contact.email}</small>
+        </span>
+      </a>
     </header>
   );
 }

@@ -1,4 +1,4 @@
-import { ArrowRight, Map } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import type { EvaluationArea, KpiCardData } from "../data/companyData";
 import { BuildingIllustration } from "./BuildingIllustration";
@@ -10,12 +10,12 @@ type HomeViewProps = {
   kpis: KpiCardData[];
   selectedArea?: EvaluationArea;
   onSelectArea: (id: string) => void;
-  onRoute: () => void;
+  onStartEvaluation: () => void;
 };
 
 const positions = ["node-base", "node-docs", "node-operation", "node-risks", "node-clients"];
 
-export function HomeView({ areas, kpis, selectedArea, onSelectArea, onRoute }: HomeViewProps) {
+export function HomeView({ areas, kpis, selectedArea, onSelectArea, onStartEvaluation }: HomeViewProps) {
   return (
     <motion.section
       className="screen home-screen"
@@ -29,11 +29,8 @@ export function HomeView({ areas, kpis, selectedArea, onSelectArea, onRoute }: H
           Entiende tu empresa de un <span>vistazo</span>
         </h1>
         <p>Ordena, revisa y decide con claridad.</p>
-        <button className="primary-action" type="button" onClick={() => onSelectArea("base")}>
+        <button className="primary-action" type="button" onClick={onStartEvaluation}>
           Iniciar evaluación <ArrowRight size={24} />
-        </button>
-        <button className="secondary-action" type="button" onClick={onRoute}>
-          Ver ruta <Map size={22} />
         </button>
       </div>
 
