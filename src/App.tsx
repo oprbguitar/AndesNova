@@ -3,6 +3,7 @@ import { Header } from "./components/Header";
 import { FloatingChatbot } from "./components/FloatingChatbot";
 import { HomeView } from "./components/HomeView";
 import { ContactModal } from "./components/ContactModal";
+import { EvaluationWizard } from "./components/EvaluationWizard";
 import { companyData } from "./data/companyData";
 import { validateCompanyData } from "./utils/validateCompanyData";
 
@@ -11,6 +12,7 @@ export default function App() {
   const [selectedAreaId, setSelectedAreaId] = useState<string | undefined>();
   const [contactOpen, setContactOpen] = useState(false);
   const [contactSummary, setContactSummary] = useState<string | undefined>();
+  const [wizardOpen, setWizardOpen] = useState(false);
   const selectedArea = data.areas.find((area) => area.id === selectedAreaId);
 
   function openContact(summary?: string) {
@@ -27,9 +29,14 @@ export default function App() {
           kpis={data.kpis}
           selectedArea={selectedArea}
           onSelectArea={setSelectedAreaId}
-          onStartEvaluation={() => openContact()}
+          onStartEvaluation={() => setWizardOpen(true)}
         />
       </div>
+      <EvaluationWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onRequestContact={(summary) => openContact(summary)}
+      />
       <ContactModal
         open={contactOpen}
         contact={data.contact}
