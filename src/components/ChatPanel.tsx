@@ -1,4 +1,4 @@
-import { Check, Copy, MoreHorizontal, RotateCcw, Send } from "lucide-react";
+import { Check, Copy, MoreHorizontal, RotateCcw, Send, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import type { Phase } from "../data/phases";
 import { ChatError, sendChat, type ChatErrorKind, type ChatSource, type ChatTurn } from "../services/chatService";
@@ -15,6 +15,7 @@ type Message = {
 type ChatPanelProps = {
   phase: Phase;
   onRequestContact: (summary?: string) => void;
+  onClose?: () => void;
 };
 
 const storageKey = "andesnova-chat-v2";
@@ -65,7 +66,7 @@ function buildSummary(messages: Message[]) {
   return lines.length ? `Resumen de mi consulta en el chat:\n\n${lines.join("\n\n")}` : undefined;
 }
 
-export function ChatPanel({ phase, onRequestContact }: ChatPanelProps) {
+export function ChatPanel({ phase, onRequestContact, onClose }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>(loadMessages);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -145,8 +146,13 @@ export function ChatPanel({ phase, onRequestContact }: ChatPanelProps) {
         <span className="chat-avatar">
           <LogoMark size={26} />
         </span>
-        <span className="chat-status">
-          <span className="chat-online" aria-hidden="true" /> En línea
+        <span className="chat-title">
+          <strong>
+            Andes<span>Nova</span>
+          </strong>
+          <span className="chat-status">
+            <span className="chat-online" aria-hidden="true" /> En línea
+          </span>
         </span>
         <div className="chat-menu">
           <button type="button" aria-label="Opciones del chat" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
@@ -177,6 +183,11 @@ export function ChatPanel({ phase, onRequestContact }: ChatPanelProps) {
             </div>
           ) : null}
         </div>
+        {onClose ? (
+          <button className="chat-close" type="button" aria-label="Cerrar chat" onClick={onClose}>
+            <X size={18} />
+          </button>
+        ) : null}
       </header>
 
       <div className="chat-scroll" ref={scrollRef} aria-live="polite">

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { ChatLauncher } from "./components/ChatLauncher";
 import { ContactModal } from "./components/ContactModal";
 import { EvaluationWizard } from "./components/EvaluationWizard";
 import { HeroScene } from "./components/HeroScene";
@@ -47,7 +48,6 @@ export default function App() {
           onSelect={selectPhase}
           onPrimary={() => openContact(`Me interesa la fase ${phase.name}: ${phase.cta.toLowerCase()}.`)}
           onDiagnosis={() => setWizardOpen(true)}
-          onRequestContact={openContact}
         />
         <PhasePanel phase={phase} onSelect={selectPhase} />
       </main>
@@ -56,6 +56,7 @@ export default function App() {
         <a href={`mailto:${contact.email}`}>{contact.email}</a>
       </footer>
 
+      <ChatLauncher phase={phase} onRequestContact={openContact} />
       <EvaluationWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onRequestContact={openContact} />
       <ContactModal open={contactOpen} contact={contact} summary={contactSummary} onClose={() => setContactOpen(false)} />
     </div>

@@ -1,14 +1,12 @@
 import { ArrowRight, Flag, PlayCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { phases, type Phase, type PhaseId } from "../data/phases";
-import { ChatPanel } from "./ChatPanel";
 
 type HeroSceneProps = {
   phase: Phase;
   onSelect: (id: PhaseId) => void;
   onPrimary: () => void;
   onDiagnosis: () => void;
-  onRequestContact: (summary?: string) => void;
 };
 
 const base = import.meta.env.BASE_URL;
@@ -34,7 +32,7 @@ function CloudLayer({ layer, reverse = false }: { layer: "back" | "mid" | "front
   );
 }
 
-export function HeroScene({ phase, onSelect, onPrimary, onDiagnosis, onRequestContact }: HeroSceneProps) {
+export function HeroScene({ phase, onSelect, onPrimary, onDiagnosis }: HeroSceneProps) {
   // The toolbox view is not a route step: show the whole route completed.
   const isTools = phase.id === "herramientas";
   const activeIndex = isTools ? routePhases.length : phase.number - 1;
@@ -54,7 +52,7 @@ export function HeroScene({ phase, onSelect, onPrimary, onDiagnosis, onRequestCo
       </div>
 
       <div className="hero-grid">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={phase.id}
             className="hero-copy"
@@ -125,7 +123,7 @@ export function HeroScene({ phase, onSelect, onPrimary, onDiagnosis, onRequestCo
               </button>
             );
           })}
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.p
               key={phase.id}
               className="route-note"
@@ -139,7 +137,6 @@ export function HeroScene({ phase, onSelect, onPrimary, onDiagnosis, onRequestCo
           </AnimatePresence>
         </div>
 
-        <ChatPanel phase={phase} onRequestContact={onRequestContact} />
       </div>
     </section>
   );

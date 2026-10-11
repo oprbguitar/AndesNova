@@ -49,7 +49,7 @@ export function PhasePanel({ phase, onSelect }: PhasePanelProps) {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={phase.id}
           id="phase-content"
