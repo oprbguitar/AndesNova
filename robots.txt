@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://oprbguitar.github.io/Andes_Nova/sitemap.xml
