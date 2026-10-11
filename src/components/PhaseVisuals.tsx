@@ -26,6 +26,12 @@ import {
   Clock,
   ShieldCheck,
   BadgeCheck,
+  ArrowRight,
+  Cloud,
+  Inbox,
+  TrendingUp,
+  UserRound,
+  Workflow,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { PhaseId } from "../data/phases";
@@ -257,7 +263,55 @@ function OptimizaVisual() {
   );
 }
 
+const toolbox = [
+  { icon: FileSpreadsheet, name: "Excel+", detail: "Potencia tu Excel con IA", tone: "green" },
+  { icon: ChartColumn, name: "Costo en tiempo real", detail: "Gastos y márgenes", tone: "orange" },
+  { icon: UserRound, name: "Hiring AI", detail: "Contrata mejor", tone: "violet" },
+  { icon: TrendingUp, name: "Sales assist", detail: "Impulsa tus ventas", tone: "blue" },
+  { icon: Inbox, name: "Inbox AI", detail: "Organiza tu correo", tone: "blue" },
+  { icon: Bot, name: "Agentes", detail: "Trabajan por ti", tone: "violet" },
+  { icon: FileText, name: "Docs AI", detail: "Genera documentos", tone: "orange" },
+  { icon: Workflow, name: "Flujos", detail: "Automatiza procesos", tone: "green" },
+];
+
+function HerramientasVisual() {
+  return (
+    <div className="visual visual-tools">
+      <div className="toolbox">
+        {toolbox.slice(0, 4).map((tool) => (
+          <ToolCard key={tool.name} {...tool} />
+        ))}
+        <div className="toolbox-hub">
+          <LogoMark size={46} />
+          <span>Tu toolbox conectado</span>
+        </div>
+        {toolbox.slice(4).map((tool) => (
+          <ToolCard key={tool.name} {...tool} />
+        ))}
+      </div>
+      <p className="tools-foot">
+        <Cloud size={14} /> Local o en la nube · Capacitación · Reportes · Cloud sync
+      </p>
+    </div>
+  );
+}
+
+function ToolCard({ icon: Icon, name, detail, tone }: (typeof toolbox)[number]) {
+  return (
+    <div className={`tool tone-${tone}`}>
+      <span className="ico">
+        <Icon size={16} />
+      </span>
+      <span>
+        <strong>{name}</strong>
+        <small>{detail}</small>
+      </span>
+    </div>
+  );
+}
+
 export function PhaseVisual({ id }: { id: PhaseId }) {
+  if (id === "herramientas") return <HerramientasVisual />;
   if (id === "implementa") return <ImplementaVisual />;
   if (id === "acompana") return <AcompanaVisual />;
   if (id === "optimiza") return <OptimizaVisual />;
@@ -303,7 +357,46 @@ const results = [
   { icon: RefreshCw, title: "Siguiente ciclo listo", detail: "Nuevas oportunidades de mejora" },
 ];
 
-export function PhaseSideCard({ id }: { id: PhaseId }) {
+const combos = [
+  { icon: ChartColumn, goal: "Para ventas", tools: ["Sales assist", "Inbox AI"], tone: "green" },
+  { icon: Coins, goal: "Para costos", tools: ["Costo en tiempo real", "Reportes"], tone: "orange" },
+  { icon: UsersRound, goal: "Para contratación", tools: ["Hiring AI", "Docs AI"], tone: "violet" },
+  { icon: FileText, goal: "Para documentos", tools: ["Docs AI", "Flujos"], tone: "blue" },
+];
+
+export function PhaseSideCard({ id, onAsk }: { id: PhaseId; onAsk?: (message: string) => void }) {
+  if (id === "herramientas") {
+    return (
+      <div className="side-card">
+        <p className="eyebrow">Elige tu combinación</p>
+        <p className="side-sub">Soluciones recomendadas por objetivo.</p>
+        <ul className="combo-list">
+          {combos.map((combo) => {
+            const Icon = combo.icon;
+            return (
+              <li key={combo.goal} className={`tone-${combo.tone}`}>
+                <button type="button" onClick={() => onAsk?.(`Quiero la combinación ${combo.goal.toLowerCase()}: ${combo.tools.join(" + ")}. ¿Cómo empiezo?`)}>
+                  <span className="ico">
+                    <Icon size={16} />
+                  </span>
+                  <span className="combo-copy">
+                    <strong>{combo.goal}</strong>
+                    <span className="combo-tags">
+                      {combo.tools.map((tool) => (
+                        <em key={tool}>{tool}</em>
+                      ))}
+                    </span>
+                  </span>
+                  <ArrowRight size={16} className="combo-go" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  }
+
   if (id === "implementa") {
     return (
       <div className="side-card">

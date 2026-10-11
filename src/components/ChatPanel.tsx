@@ -76,9 +76,18 @@ export function ChatPanel({ phase, onRequestContact }: ChatPanelProps) {
 
   useEffect(() => saveMessages(messages), [messages]);
 
+  // Other parts of the page (e.g. tool combinations) can ask the assistant.
+  const askRef = useRef<(text: string) => void>(() => undefined);
+  useEffect(() => {
+    const onAsk = (event: Event) => askRef.current(String((event as CustomEvent).detail ?? ""));
+    window.addEventListener("andesnova:ask", onAsk);
+    return () => window.removeEventListener("andesnova:ask", onAsk);
+  }, []);
+
   useEffect(() => {
     const box = scrollRef.current;
-    if (box) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+    // Keep the greeting in view until the conversation starts.
+    if (box && (messages.length || loading)) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
   async function ask(text: string, baseMessages = messages) {
@@ -103,6 +112,8 @@ export function ChatPanel({ phase, onRequestContact }: ChatPanelProps) {
       setLoading(false);
     }
   }
+
+  askRef.current = (text: string) => ask(text);
 
   function retry(text: string) {
     // Drop the failed question and its error so it is re-sent cleanly.

@@ -9,6 +9,10 @@ type PhasePanelProps = {
   onSelect: (id: PhaseId) => void;
 };
 
+function askAssistant(message: string) {
+  window.dispatchEvent(new CustomEvent("andesnova:ask", { detail: message }));
+}
+
 export function PhasePanel({ phase, onSelect }: PhasePanelProps) {
   const index = phase.number - 1;
   const prev = phases[(index + phases.length - 1) % phases.length];
@@ -81,7 +85,7 @@ export function PhasePanel({ phase, onSelect }: PhasePanelProps) {
           </div>
 
           <PhaseVisual id={phase.id} />
-          <PhaseSideCard id={phase.id} />
+          <PhaseSideCard id={phase.id} onAsk={askAssistant} />
         </motion.div>
       </AnimatePresence>
 

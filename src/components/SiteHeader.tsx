@@ -15,7 +15,7 @@ export function SiteHeader({ activeId, onSelect, onStart }: SiteHeaderProps) {
         <Logo />
       </a>
 
-      <nav className="site-nav" aria-label="Fases">
+      <nav className="site-nav" aria-label="Secciones">
         {phases.map((phase) => (
           <a
             key={phase.id}
@@ -30,7 +30,6 @@ export function SiteHeader({ activeId, onSelect, onStart }: SiteHeaderProps) {
             {phase.name}
           </a>
         ))}
-        <a href="#proyectos">Proyectos</a>
       </nav>
 
       <button className="btn btn-primary header-cta" type="button" onClick={onStart}>

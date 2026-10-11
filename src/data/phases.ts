@@ -21,10 +21,14 @@ import {
   Workflow,
   Activity,
   Network,
+  Clock,
+  Layers,
+  Search,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type PhaseId = "activa" | "implementa" | "acompana" | "optimiza";
+export type PhaseId = "activa" | "implementa" | "acompana" | "optimiza" | "herramientas";
 
 export type Feature = {
   icon: LucideIcon;
@@ -50,7 +54,6 @@ export type Phase = {
   lead: string;
   cta: string;
   note: string;
-  tagline: string[];
   chatGreeting: string;
   chips: ChatChip[];
   panelEyebrow: string;
@@ -73,7 +76,6 @@ export const phases: Phase[] = [
     lead: "IA First con Pod-of-One y agentes. Implementación en 3–7 días. Bajo costo. Local o nube. Menos software, más resultados.",
     cta: "Quiero reducir costos",
     note: "Resultados reales en menos tiempo",
-    tagline: ["Menos costo", "Más control", "Más libertad"],
     chatGreeting:
       "Hola, soy AndesNova 👋 Te acompaño de inicio a fin. Con IA, agentes y un Pod-of-One para tu negocio.",
     chips: [
@@ -106,7 +108,6 @@ export const phases: Phase[] = [
     lead: "Activamos agentes, conectamos tus herramientas y comenzamos a generar resultados en pocos días, con costos accesibles, en la nube o en tu entorno local.",
     cta: "Quiero implementar",
     note: "Implementación hoy, resultados mañana",
-    tagline: ["Pequeños negocios", "Grandes historias"],
     chatGreeting:
       "Hola, soy AndesNova 👋 Te ayudo a implementar agentes con IA, conectar tus herramientas y ponerlo en marcha rápidamente. ¿Qué necesitas hoy?",
     chips: [
@@ -141,7 +142,6 @@ export const phases: Phase[] = [
     lead: "Agentes de IA trabajando contigo, monitoreando en tiempo real, para que tomes mejores decisiones, reduzcas tu carga operativa y hagas crecer tu negocio con tranquilidad.",
     cta: "Quiero acompañamiento",
     note: "Tu negocio también puede llegar más lejos",
-    tagline: ["Pequeños negocios", "Grandes historias"],
     chatGreeting:
       "Hola, soy AndesNova 👋 Te acompaño en tiempo real para mantener tus costos bajo control y que tu negocio avance. ¿Qué te gustaría hacer hoy?",
     chips: [
@@ -176,7 +176,6 @@ export const phases: Phase[] = [
     lead: "Después de la implementación seguimos a tu lado: capacitamos a tu equipo, optimizamos tus procesos, documentamos todo y reiniciamos el ciclo para que sigas creciendo con menos costos.",
     cta: "Quiero optimizar",
     note: "Un ciclo que siempre sigue llevándote más lejos",
-    tagline: ["Misma visión", "Nuevos logros"],
     chatGreeting:
       "Hola, soy AndesNova 👋 Te ayudo a optimizar, capacitar y seguir mejorando. ¿Qué te gustaría hacer hoy?",
     chips: [
@@ -199,6 +198,37 @@ export const phases: Phase[] = [
       { icon: MapPin, title: "Escala", detail: "Listo para crecer", tone: "blue" },
     ],
     hashtag: "#CicloVivo",
+  },
+  {
+    id: "herramientas",
+    number: 5,
+    name: "Herramientas",
+    routeLabel: "Herramientas",
+    routeDetail: "Tu toolbox",
+    eyebrow: "Herramientas de IA para negocios reales",
+    title: ["Herramientas que", "reducen costo hoy."],
+    lead: "Un toolbox de IA, simple y de bajo costo, que complementa tus herramientas actuales. Implementa en tu empresa, local o en la nube, y empieza a ver resultados.",
+    cta: "Quiero mi toolbox",
+    note: "Herramientas inteligentes para llegar más lejos",
+    chatGreeting:
+      "Hola, soy AndesNova 👋 Te ayudo a elegir las herramientas ideales para tu negocio con IA. ¿Qué te gustaría hacer hoy?",
+    chips: [
+      { icon: Activity, label: "Costos en tiempo real", message: "¿Qué herramienta me ayuda a controlar mis costos en tiempo real?" },
+      { icon: FileSpreadsheet, label: "Complementa mi Excel", message: "¿Cómo funciona Excel+ para complementar mis archivos de Excel?" },
+      { icon: UsersRound, label: "Contrata mejor", message: "¿Qué combinación de herramientas me recomiendas para contratar mejor?" },
+      { icon: FileText, label: "Crear documentos", message: "Quiero generar y organizar documentos con IA. ¿Qué herramientas uso?" },
+    ],
+    panelEyebrow: "Nuestras herramientas",
+    panelTitle: "Herramientas que activan tu operación.",
+    panelSubtitle: "AI First + bajo costo + local o nube.",
+    panelBody: "Complementa lo que ya usas, sin sumar software disperso.",
+    features: [
+      { icon: Search, title: "1 licencia central", detail: "Para todo tu negocio", tone: "green" },
+      { icon: Layers, title: "Menos software", detail: "Más simplicidad", tone: "blue" },
+      { icon: Zap, title: "Rápido de activar", detail: "En días, no meses", tone: "orange" },
+      { icon: Clock, title: "Acompañamiento", detail: "De 3 a 7 días", tone: "violet" },
+    ],
+    hashtag: "#ToolstackLigero",
   },
 ];
 

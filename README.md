@@ -1,6 +1,6 @@
 # AndesNova
 
-Sitio de AndesNova (*Tu negocio más lejos*): una sola página con la ruta **Activa → Implementa → Acompaña → Optimiza**, asistente con IA y diagnóstico de 2 minutos. Construido con React, Vite, TypeScript, Framer Motion y Lucide.
+Sitio de AndesNova (*Tu negocio más lejos*): una sola página, sin scroll en escritorio, con la ruta **Activa → Implementa → Acompaña → Optimiza**, el toolbox de **Herramientas**, asistente con IA y diagnóstico de 2 minutos. Contacto: consultas@andesnova.solutions. Construido con React, Vite, TypeScript, Framer Motion y Lucide.
 
 ## Sitios publicados
 
@@ -8,7 +8,7 @@ Sitio de AndesNova (*Tu negocio más lejos*): una sola página con la ruta **Act
 |---|---|---|
 | Cloudflare Workers (sitio + API del chat) | https://andesnova-web.oprbguitar.workers.dev | `npm run deploy:cf` |
 | GitHub Pages | https://oprbguitar.github.io/Andes_Nova/ | carpeta `docs/` en `main` del repo `Andes_Nova` |
-| Vercel | https://andesnova.vercel.app | build automático (`npm run build`) |
+| Dominio principal (Vercel) | https://www.andesnova.solutions | push a `main` de `oprbguitar/AndesNova` |
 
 ## Estructura
 
@@ -17,7 +17,7 @@ src/
   App.tsx                 Página única; la fase activa se sincroniza con la URL (#activa, #implementa…)
   data/phases.ts          Contenido de las 4 fases (hero, chips del chat, panel)
   data/site.ts            Contacto y proyectos (BEDOIA, CAPTA, AMAUTA)
-  components/HeroScene    Fondo de los Andes con nubes animadas + ruta de fases + chat
+  components/HeroScene    Montaña centrada con nubes animadas (3 capas) + ruta de fases + chat
   components/PhasePanel   Pestañas, contenido por fase y proyectos
   components/ChatPanel    Asistente AndesNova
   services/chatService.ts Cloudflare primero, Gemini como respaldo

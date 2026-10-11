@@ -2,7 +2,7 @@ import { Building2, Gavel, Scale } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const contact = {
-  email: "peru.labs.pe@gmail.com",
+  email: "consultas@andesnova.solutions",
 };
 
 export type Project = {

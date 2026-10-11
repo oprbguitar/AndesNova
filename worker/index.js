@@ -6,6 +6,8 @@ import { fallbackDocIds, knowledge } from "./knowledge.js";
 // response says so (quotaReached) and the site falls back to the Gemini API.
 
 const ALLOWED_ORIGINS = [
+  "https://www.andesnova.solutions",
+  "https://andesnova.solutions",
   "https://oprbguitar.github.io",
   "https://andesnova.vercel.app",
   "https://andesnova-web.oprbguitar.workers.dev",
@@ -54,7 +56,7 @@ Reglas:
 `;
 
 function corsHeaders(origin) {
-  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const allowed = ALLOWED_ORIGINS.includes(origin) || /^https:\/\/andesnova-[a-z0-9-]+\.vercel\.app$/.test(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

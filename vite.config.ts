@@ -6,7 +6,7 @@ const isVercel = Boolean(process.env.VERCEL);
 
 function siteFor(mode: string) {
   if (mode === "cloudflare") return { base: "/", siteUrl: "https://andesnova-web.oprbguitar.workers.dev/", outDir: "dist" };
-  if (isVercel) return { base: "/", siteUrl: "https://andesnova.vercel.app/", outDir: "docs" };
+  if (isVercel) return { base: "/", siteUrl: "https://www.andesnova.solutions/", outDir: "docs" };
   return { base: "/Andes_Nova/", siteUrl: "https://oprbguitar.github.io/Andes_Nova/", outDir: "docs" };
 }
 
