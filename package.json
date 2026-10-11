@@ -1,11 +1,14 @@
 {
-  "name": "andes-nova-evaluation-portal",
+  "name": "andesnova",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:github": "tsc -b && vite build",
+    "build:cf": "tsc -b && vite build --mode cloudflare",
+    "deploy:cf": "npm run build:cf && npx wrangler@4 deploy",
     "preview": "vite preview"
   },
   "dependencies": {

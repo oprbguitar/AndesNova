@@ -1,12 +1,16 @@
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
-// GitHub Pages serves from /Andes_Nova/; Vercel serves from the domain root.
+// GitHub Pages serves from /Andes_Nova/; Vercel and Cloudflare serve from the domain root.
 const isVercel = Boolean(process.env.VERCEL);
-const base = isVercel ? "/" : "/Andes_Nova/";
-const siteUrl = isVercel ? "https://andesnova.vercel.app/" : "https://oprbguitar.github.io/Andes_Nova/";
 
-function seoFiles(): Plugin {
+function siteFor(mode: string) {
+  if (mode === "cloudflare") return { base: "/", siteUrl: "https://andesnova-web.oprbguitar.workers.dev/", outDir: "dist" };
+  if (isVercel) return { base: "/", siteUrl: "https://andesnova.vercel.app/", outDir: "docs" };
+  return { base: "/Andes_Nova/", siteUrl: "https://oprbguitar.github.io/Andes_Nova/", outDir: "docs" };
+}
+
+function seoFiles(siteUrl: string): Plugin {
   const lastmod = new Date().toISOString().slice(0, 10);
 
   return {
@@ -33,10 +37,14 @@ function seoFiles(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), seoFiles()],
-  base,
-  build: {
-    outDir: "docs",
-  },
+export default defineConfig(({ mode }) => {
+  const { base, siteUrl, outDir } = siteFor(mode);
+
+  return {
+    plugins: [react(), seoFiles(siteUrl)],
+    base,
+    build: {
+      outDir,
+    },
+  };
 });
